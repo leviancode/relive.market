@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+.button {
+  @apply px-4 py-2 rounded-lg transition-colors;
+}
+
+.button--primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600;
+}
+
+.button--secondary {
+  @apply bg-gray-500 text-white hover:bg-gray-600;
+}
+
+.button--outline {
+  @apply border border-current hover:bg-gray-100;
+}
+
+.button--small {
+  @apply px-2 py-1 text-sm;
+}
+
+.button--medium {
+  @apply px-4 py-2;
+}
+
+.button--large {
+  @apply px-6 py-3 text-lg;
+} 

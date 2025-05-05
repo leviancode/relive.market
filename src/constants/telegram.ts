@@ -1,0 +1,1 @@
+export const TELEGRAM_MINI_APP_URL = 'https://t.me/ReliveMarketBot/app';
