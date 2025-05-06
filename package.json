@@ -15,7 +15,8 @@
   "rebuild:prod": "pnpm run clean && pnpm run build:prod",
   "deploy:dev": "pnpm run build:dev && firebase deploy --only hosting:relivemarket-dev",
   "deploy:prod": "pnpm run build:prod && firebase deploy --only hosting:relivemarket",
-  "serve:prod": "serve public/app"
+  "serve:prod": "serve public/app",
+  "git:push": "tsx src/scripts/git-push.ts"
 },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
