@@ -7,12 +7,15 @@
   "dev:https": "next dev --experimental-https",
   "start": "next start",
   "lint": "next lint",
+
   "build": "next build",
   "build:dev": "NEXT_PUBLIC_ENV=dev next build",
   "build:prod": "NEXT_PUBLIC_ENV=prod next build",
-  "clean": "rm -rf .next out",
   "rebuild": "pnpm run clean && pnpm run build",
-  "git:push": "tsx src/scripts/git-push.ts"
+  "clean": "rm -rf .next out",
+
+  "git:push": "tsx src/scripts/git-push.ts",
+  "git:merge:dev": "tsx scripts/git-merge-push-dev.ts"
 },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
