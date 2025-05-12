@@ -22,8 +22,7 @@ export default function ListingsPage() {
   useEffect(() => {
     async function fetchListings() {
       try {
-        const collectionName =
-          process.env.NODE_ENV === 'development' ? 'listings-dev' : 'listings';
+        const collectionName = 'listings';
         const querySnapshot = await getDocs(collection(db, collectionName));
         const fetchedListings = querySnapshot.docs.map((doc) => ({
           id: doc.id,
