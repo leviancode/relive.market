@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>Telegram WebApp Test</h1>
+    <pre id="out"></pre>
+    <script>
+      setTimeout(() => {
+        document.getElementById('out').textContent = JSON.stringify(window.Telegram, null, 2);
+      }, 1000);
+    </script>
+  </body>
+</html>
