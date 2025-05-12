@@ -2,10 +2,19 @@
 <html>
   <body>
     <h1>Telegram WebApp Test</h1>
-    <pre id="out"></pre>
+    <pre id="out">Loading...</pre>
     <script>
+      function dump(obj) {
+        return JSON.stringify(obj, null, 2);
+      }
+
       setTimeout(() => {
-        document.getElementById('out').textContent = JSON.stringify(window.Telegram, null, 2);
+        const out = document.getElementById('out');
+        if (window.Telegram) {
+          out.textContent = '✅ window.Telegram is present\n\n' + dump(window.Telegram);
+        } else {
+          out.textContent = '❌ window.Telegram is NOT defined';
+        }
       }, 1000);
     </script>
   </body>
