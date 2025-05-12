@@ -12,6 +12,7 @@ interface TelegramProviderProps {
 export const TelegramProvider = ({ children }: TelegramProviderProps) => {
   const [mounted, setMounted] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
+  const [tgParams, setTgParams] = React.useState<any>(null);
 
   React.useEffect(() => {
     const initTelegram = async () => {
@@ -25,6 +26,16 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
           isTelegram
         });
 
+        if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
+          console.log('[Telegram] window.Telegram.WebApp:', window.Telegram.WebApp);
+          setTgParams({
+            initData: window.Telegram.WebApp.initData,
+            initDataUnsafe: window.Telegram.WebApp.initDataUnsafe
+          });
+        } else {
+          setTgParams(null);
+        }
+
         // В production должны быть параметры Telegram
         if (!isDev && !isTelegram) {
           throw new Error('Must be launched inside Telegram Web App');
@@ -34,11 +45,9 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
         if (isDev && !isTelegram) {
           console.log('[Dev] Injecting Telegram mock environment...');
           initDevEnvironment();
-          // Даем среде время "примениться"
           await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        // Инициализируем SDK только если есть параметры (реальные или мок)
         if (typeof window !== 'undefined' && window.Telegram?.WebApp?.initData) {
           console.log('[Telegram] Initializing SDK...');
           init();
@@ -51,8 +60,6 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
       } catch (err) {
         console.error('[Telegram] Initialization failed:', err);
         setError(err instanceof Error ? err : new Error(String(err)));
-        
-        // В dev продолжаем даже с ошибкой
         if (process.env.NODE_ENV === 'development') {
           console.warn('[Dev] Continuing despite initialization error');
           setMounted(true);
@@ -70,6 +77,17 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
   if (error) {
     console.warn('[Telegram] Rendering despite initialization error:', error);
+  }
+
+  // Diagnostic UI for Telegram params
+  if (!tgParams || (!tgParams.initData && !tgParams.initDataUnsafe)) {
+    return (
+      <div style={{ padding: 32, color: 'orange', fontWeight: 'bold' }}>
+        <h2>Telegram WebApp parameters not found</h2>
+        <p>window.Telegram.WebApp is missing or incomplete.</p>
+        <pre>{JSON.stringify(tgParams, null, 2)}</pre>
+      </div>
+    );
   }
 
   return <AppRoot>{children}</AppRoot>;
