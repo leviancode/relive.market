@@ -14,6 +14,7 @@
       "favorites": "Favorites",
       "loading": "Loading...",
       "emptyTitle": "No listings yet",
-      "emptyDescription": "Create your first listing to start selling!"
+      "emptyDescription": "Create your first listing to start selling!",
+      "error": "Failed to load listings"
     }
 }

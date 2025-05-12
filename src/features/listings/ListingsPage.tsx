@@ -16,22 +16,37 @@ export default function ListingsPage() {
   const [listings, setListings] = useState<Listing[]>([]);
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
   const router = useRouter();
   const t = useTranslations('listings');
 
   useEffect(() => {
     async function fetchListings() {
       try {
+        console.log('[Listings] Fetching listings from Firestore...');
         const collectionName = 'listings';
         const querySnapshot = await getDocs(collection(db, collectionName));
+        
+        console.log('[Listings] Raw Firestore response:', {
+          empty: querySnapshot.empty,
+          size: querySnapshot.size,
+          docs: querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            exists: doc.exists(),
+            data: doc.data()
+          }))
+        });
+
         const fetchedListings = querySnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         })) as Listing[];
 
+        console.log('[Listings] Processed listings:', fetchedListings);
         setListings(fetchedListings);
       } catch (error) {
-        console.error('Failed to fetch listings:', error);
+        console.error('[Listings] Failed to fetch listings:', error);
+        setError(error instanceof Error ? error : new Error(String(error)));
       } finally {
         setLoading(false);
       }
@@ -46,6 +61,21 @@ export default function ListingsPage() {
         <div className="p-4 text-center">
           <Text weight="2" size={16}>
             {t('loading')}
+          </Text>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-[#f9f9f9]">
+        <div className="p-4 text-center">
+          <Text weight="2" size={16} className="text-red-500">
+            {t('error')}
+          </Text>
+          <Text size={14} className="mt-2 text-gray-500">
+            {error.message}
           </Text>
         </div>
       </div>
