@@ -16,51 +16,54 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
 
   React.useEffect(() => {
     const initTelegram = async () => {
+      const isDev = process.env.NODE_ENV === 'development';
+      const enableEmulator = process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_DEV_EMULATOR === 'true';
+
+      const isTelegram =
+        typeof window !== 'undefined' &&
+        !!window.Telegram?.WebApp &&
+        (!!window.Telegram.WebApp.platform || !!window.Telegram.WebApp.initData);
+
+      console.log('[Telegram] Environment:', {
+        NODE_ENV: process.env.NODE_ENV,
+        ENABLE_EMULATOR: enableEmulator,
+        isTelegram
+      });
+
       try {
-        const isDev = process.env.NODE_ENV === 'development';
-        const isTelegram = typeof window !== 'undefined' && !!window.Telegram?.WebApp?.initData;
+        if (typeof window !== 'undefined') {
+          console.log('[Telegram] WebApp object:', window.Telegram?.WebApp);
 
-        console.log('[Telegram] Environment:', {
-          NODE_ENV: process.env.NODE_ENV,
-          ENABLE_EMULATOR: process.env.NEXT_PUBLIC_ENABLE_TELEGRAM_DEV_EMULATOR,
-          isTelegram
-        });
+          if (window.Telegram?.WebApp) {
+            setTgParams({
+              initData: window.Telegram.WebApp.initData,
+              initDataUnsafe: window.Telegram.WebApp.initDataUnsafe
+            });
+          }
+        }
 
+        if (!isTelegram) {
+          if (isDev && enableEmulator) {
+            console.log('[Telegram] No WebApp context – injecting dev emulator...');
+            initDevEnvironment();
+            await new Promise((resolve) => setTimeout(resolve, 100)); // небольшой "cooldown"
+          } else {
+            throw new Error('Must be launched inside Telegram Web App');
+          }
+        }
+
+        // Повторная проверка после возможной инициализации эмулятора
         if (typeof window !== 'undefined' && window.Telegram?.WebApp) {
-          console.log('[Telegram] window.Telegram.WebApp:', window.Telegram.WebApp);
-          setTgParams({
-            initData: window.Telegram.WebApp.initData,
-            initDataUnsafe: window.Telegram.WebApp.initDataUnsafe
-          });
-        } else {
-          setTgParams(null);
-        }
-
-        // В production должны быть параметры Telegram
-        if (!isDev && !isTelegram) {
-          throw new Error('Must be launched inside Telegram Web App');
-        }
-
-        // В dev используем эмулятор если нет реальных параметров
-        if (isDev && !isTelegram) {
-          console.log('[Dev] Injecting Telegram mock environment...');
-          initDevEnvironment();
-          await new Promise(resolve => setTimeout(resolve, 100));
-        }
-
-        if (typeof window !== 'undefined' && window.Telegram?.WebApp?.initData) {
-          console.log('[Telegram] Initializing SDK...');
           init();
-          console.log('[Telegram] SDK initialized successfully');
-        } else {
-          console.warn('[Telegram] No WebApp parameters found, skipping SDK initialization');
+          console.log('[Telegram] SDK initialized');
         }
 
         setMounted(true);
       } catch (err) {
         console.error('[Telegram] Initialization failed:', err);
         setError(err instanceof Error ? err : new Error(String(err)));
-        if (process.env.NODE_ENV === 'development') {
+
+        if (isDev) {
           console.warn('[Dev] Continuing despite initialization error');
           setMounted(true);
         }
@@ -79,7 +82,6 @@ export const TelegramProvider = ({ children }: TelegramProviderProps) => {
     console.warn('[Telegram] Rendering despite initialization error:', error);
   }
 
-  // Diagnostic UI for Telegram params
   if (!tgParams || (!tgParams.initData && !tgParams.initDataUnsafe)) {
     return (
       <div style={{ padding: 32, color: 'orange', fontWeight: 'bold' }}>
