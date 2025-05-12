@@ -52,8 +52,8 @@ pnpm run deploy:dev       # Deploy to https://dev.relive.market/app
 | URL                                                            | Target                  | Purpose                     |
 | -------------------------------------------------------------- | ----------------------- | --------------------------- |
 | [https://relive.market](https://relive.market)                 | `relivemarket`          | Landing page                |
-| [https://relive.market/app](https://relive.market/app)         | `relivemarket`          | Prod Telegram Mini App      |
-| [https://dev.relive.market/app](https://dev.relive.market/app) | `relivemarket-dev`      | Dev Telegram Mini App       |
+| [https://relive.market/app](https://app.relive.market)         | `relivemarket`          | Prod Telegram Mini App      |
+| [https://dev.relive.market/app](https://dev.app.relive.market) | `relivemarket-dev`      | Dev Telegram Mini App       |
 | [https://www.relive.market](https://www.relive.market)         | `relivemarket-redirect` | Redirect to `relive.market` |
 
 ---
@@ -92,7 +92,7 @@ To test:
 2. Add Web App to the bot:
 
 ```bash
-/setdomain → https://relive.market/app
+/setdomain → https://app.relive.market
 ```
 
 3. Open your bot → Web App button should appear
@@ -102,7 +102,7 @@ To test **dev** version:
 * Add another Web App URL to the same bot (or use a separate dev bot):
 
 ```
-/setdomain → https://dev.relive.market/app
+/setdomain → https://dev.app.relive.market
 ```
 
 ---
